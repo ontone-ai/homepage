@@ -3,353 +3,788 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ONTONE - 데이터와 AI로 비즈니스를 혁신합니다</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- AOS (Animate On Scroll) Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>ONTONE - 온톨로지 기반 데이터 통합 솔루션</title>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        /* Animated Gradient Background for Hero Section */
-        .animated-gradient {
-            background: linear-gradient(-45deg, #0f766e, #14b8a6, #5eead4, #2dd4bf);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-        }
-        
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* --- Reset & Variables --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
+        :root {
+            --bg-dark: #030712;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --bg-card-hover: rgba(255, 255, 255, 0.08);
+            --primary: #6366f1; /* Indigo */
+            --secondary: #06b6d4; /* Cyan */
+            --accent: #ec4899; /* Pink */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --gradient-main: linear-gradient(135deg, var(--primary), var(--secondary));
+            --gradient-text: linear-gradient(135deg, #a5b4fc, #67e8f9);
+            --border-glass: 1px solid rgba(255, 255, 255, 0.1);
+            --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.2);
         }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.7;
+            overflow-x: hidden;
+            position: relative; /* 중요 */
         }
-        ::-webkit-scrollbar-thumb {
-            background: #14b8a6;
-            border-radius: 5px;
+
+        /* --- Ambient Background Effects (Fixed Layering) --- */
+        .ambient-light {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* 배경을 0으로 설정 */
+            overflow: hidden;
+            pointer-events: none;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #0f766e;
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s infinite alternate;
+        }
+
+        .blob-1 { top: -10%; left: -10%; width: 600px; height: 600px; background: var(--primary); }
+        .blob-2 { bottom: -10%; right: -10%; width: 500px; height: 500px; background: var(--secondary); animation-delay: -5s; }
+        .blob-3 { top: 40%; left: 40%; width: 400px; height: 400px; background: var(--accent); animation-duration: 25s; opacity: 0.2; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 50px) scale(1.1); }
+        }
+
+        /* --- Typography & Common --- */
+        h1, h2, h3, h4 { font-weight: 800; letter-spacing: -0.02em; color: white; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        
+        .section {
+            padding: 120px 24px;
+            max-width: 1280px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1; /* 콘텐츠를 배경 위로 올림 */
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section-header h2 {
+            font-size: 42px;
+            margin-bottom: 20px;
+            color: white; /* Fallback color */
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-header p {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        /* --- Safe Animation (No Initial Hiding) --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reveal {
+            /* opacity: 0; <-- 제거됨: 텍스트 안 보이는 문제 해결 */
+            animation: fadeInUp 1s ease-out forwards; /* 페이지 로드시 부드럽게 등장 */
+        }
+
+        /* --- Navbar --- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100; /* 네비게이션 최상단 */
+            padding: 20px 0;
+            transition: 0.3s;
+        }
+
+        .navbar.scrolled {
+            background: rgba(3, 7, 18, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: var(--border-glass);
+            padding: 15px 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            color: white;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span { color: var(--secondary); }
+
+        .nav-menu {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-muted);
+            position: relative;
+        }
+
+        .nav-menu a:hover, .nav-menu a.active { color: white; }
+        .nav-menu a::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px;
+            background: var(--secondary); transition: 0.3s;
+        }
+        .nav-menu a:hover::after { width: 100%; }
+
+        .cta-button {
+            padding: 10px 24px;
+            background: var(--gradient-main);
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .cta-button:hover {
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-top: 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 1000px;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 72px;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            color: white;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero h1 span {
+            color: var(--secondary);
+            background: linear-gradient(135deg, #6366f1, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 22px;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 50px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn-glass {
+            padding: 18px 40px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--bg-dark);
+        }
+        .btn-primary:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary {
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            background: rgba(255,255,255,0.05);
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: white;
+        }
+
+        /* --- Cards (Features & Solutions) --- */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+
+        .card {
+            background: var(--bg-card);
+            border: var(--border-glass);
+            border-radius: 24px;
+            padding: 40px;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: 0.4s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            background: var(--bg-card-hover);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: var(--shadow-glow);
+        }
+        .card:hover::before { opacity: 1; }
+
+        .icon-box {
+            width: 60px; height: 60px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .card h3 {
+            font-size: 22px; margin-bottom: 15px; color: white;
+        }
+        .card p { color: var(--text-muted); font-size: 16px; }
+
+        /* --- Solution List Customization --- */
+        .solution-list { list-style: none; margin-top: 20px; }
+        .solution-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; align-items: center;
+            color: var(--text-muted);
+        }
+        .solution-list li:last-child { border-bottom: none; }
+        .solution-list li::before {
+            content: '▹'; color: var(--secondary); margin-right: 10px;
+        }
+
+        /* --- Stats Section --- */
+        .stats-wrapper {
+            border-top: var(--border-glass);
+            border-bottom: var(--border-glass);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(20px);
+            position: relative;
+            z-index: 1;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            padding: 80px 20px;
+            max-width: 1280px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .stat-num {
+            font-size: 56px;
+            font-weight: 900;
+            color: white;
+            background: var(--gradient-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        .stat-label { color: var(--text-muted); font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- Tech Stack (Tags) --- */
+        .tech-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        .tech-tag {
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 100px;
+            color: white;
+            font-weight: 600;
+            transition: 0.3s;
+            cursor: default;
+        }
+        .tech-tag:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+        }
+
+        /* --- Process Steps --- */
+        .process-container {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 60px;
+        }
+        .process-container::before {
+            content: '';
+            position: absolute;
+            top: 30px; left: 50px; right: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1), var(--primary), rgba(255,255,255,0.1));
+            z-index: 0;
+        }
+        .process-item {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            flex: 1;
+            padding: 0 15px;
+        }
+        .step-circle {
+            width: 60px; height: 60px;
+            background: var(--bg-dark);
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            font-weight: bold;
+            font-size: 20px;
+            color: var(--primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+            transition: 0.3s;
+        }
+        .process-item:hover .step-circle {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* --- Contact Form --- */
+        .contact-wrapper {
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
+            border: var(--border-glass);
+            border-radius: 30px;
+            padding: 60px;
+            backdrop-filter: blur(20px);
+        }
+        
+        .form-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;
+        }
+        
+        .form-group label {
+            display: block; margin-bottom: 10px; font-size: 14px; color: var(--text-muted);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0,0,0,0.5);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        textarea.form-control { resize: vertical; min-height: 150px; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 20px;
+            background: var(--gradient-main);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+        .submit-btn:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+        }
+
+        /* --- Footer --- */
+        footer {
+            border-top: var(--border-glass);
+            padding: 80px 0 40px;
+            background: rgba(0,0,0,0.2);
+            margin-top: 100px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px;
+            max-width: 1280px; margin: 0 auto; padding: 0 24px;
+        }
+        
+        .footer-col h4 { color: white; margin-bottom: 25px; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: var(--text-muted); font-size: 14px; }
+        .footer-links a:hover { color: var(--secondary); }
+        
+        .footer-bottom {
+            text-align: center;
+            margin-top: 80px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.3);
+            font-size: 14px;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 1024px) {
+            .grid-3, .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero h1 { font-size: 56px; }
+        }
+
+        @media (max-width: 768px) {
+            .grid-3, .grid-2, .stats-grid, .footer-grid, .form-grid { grid-template-columns: 1fr; }
+            .nav-menu { display: none; }
+            .hero h1 { font-size: 40px; }
+            .process-container { flex-direction: column; gap: 40px; }
+            .process-container::before { left: 29px; top: 0; bottom: 0; width: 2px; height: auto; }
+            .contact-wrapper { padding: 30px; }
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body>
 
-    <!-- Header -->
-    <header class="fixed top-0 w-full bg-white/95 backdrop-blur-md shadow-sm z-50">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#home" class="text-2xl font-bold text-teal-600">ONTONE</a>
-            <div class="hidden lg:flex space-x-8">
-                <a href="#services" class="hover:text-teal-600 transition-colors">서비스</a>
-                <a href="#solutions" class="hover:text-teal-600 transition-colors">솔루션</a>
-                <a href="#clients" class="hover:text-teal-600 transition-colors">고객사</a>
-                <a href="#resources" class="hover:text-teal-600 transition-colors">리소스</a>
-                <a href="#about" class="hover:text-teal-600 transition-colors">회사소개</a>
-                <a href="#contact" class="hover:text-teal-600 transition-colors">문의</a>
-            </div>
-            <a href="#contact" class="bg-teal-600 text-white px-6 py-2 rounded-full hover:bg-teal-700 transition-all transform hover:scale-105 shadow-md">
-                문의하기
-            </a>
-            <!-- Mobile Menu Button -->
-            <button class="lg:hidden text-gray-600" id="mobile-menu-button">
-                <i class="fas fa-bars text-2xl"></i>
-            </button>
-        </nav>
-    </header>
+    <div class="ambient-light">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
 
-    <main>
-        <!-- Hero Section -->
-        <section id="home" class="animated-gradient text-white pt-20 min-h-screen flex items-center">
-            <div class="container mx-auto px-6 py-24 text-center">
-                <h1 class="text-5xl md:text-6xl font-extrabold leading-tight" data-aos="fade-up">
-                    데이터와 AI로<br>비즈니스를 혁신합니다
-                </h1>
-                <p class="mt-6 text-lg md:text-xl font-light max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="100">
-                    온톤은 최고의 AI 및 데이터 플랫폼을 통해 고객의 디지털 전환(DX)을 가속화하고<br>스마트 팩토리 구축을 위한 최적의 솔루션을 제공합니다.
-                </p>
-                <div class="mt-10 space-x-4" data-aos="fade-up" data-aos-delay="200">
-                    <a href="#services" class="bg-white text-teal-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg">
-                        서비스 알아보기
-                    </a>
-                    <a href="#contact" class="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-teal-600 transition-all">
-                        문의하기
-                    </a>
-                </div>
-            </div>
-        </section>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">ONT<span>ONE</span></div>
+            <ul class="nav-menu">
+                <li><a href="#home">홈</a></li>
+                <li><a href="#solutions">솔루션</a></li>
+                <li><a href="#technology">기술</a></li>
+                <li><a href="#process">프로세스</a></li>
+                <li><a href="#contact">문의</a></li>
+            </ul>
+            <a href="#contact" class="cta-button">무료 상담</a>
+        </div>
+    </nav>
 
-        <!-- "What ONTONE Does" Section -->
-        <section class="py-20 bg-white">
-            <div class="container mx-auto px-6">
-                <div class="flex flex-col md:flex-row items-center gap-12">
-                    <div class="md:w-1/2" data-aos="fade-right">
-                        <div class="bg-teal-100 w-20 h-20 rounded-full flex items-center justify-center mb-6">
-                            <i class="fas fa-lightbulb text-teal-600 text-3xl"></i>
-                        </div>
-                        <h2 class="text-3xl font-bold mb-4">ONTONE은 무엇을 하는가?</h2>
-                    </div>
-                    <div class="md:w-1/2" data-aos="fade-left">
-                        <p class="text-lg leading-relaxed text-gray-600">
-                            온톤은 데이터 기반의 인공지능(AI) 솔루션과 플랫폼을 전문으로 하는 기업입니다. 우리는 기업이 보유한 데이터의 가치를 극대화하고, AI 기술을 비즈니스 프로세스에 접목하여 생산성을 향상시키고 새로운 성장 기회를 창출하도록 돕습니다. 디지털 전환 컨설팅부터 스마트 팩토리 구축, 맞춤형 AI 모델 개발까지, 성공적인 데이터 활용을 위한 모든 과정을 함께합니다.
-                        </p>
-                    </div>
-                </div>
+    <section class="hero" id="home">
+        <div class="hero-content reveal">
+            <h1>온톨로지 기반<br><span>지능형 데이터 통합</span> 솔루션</h1>
+            <p>군과 제조업의 복잡한 데이터를 AI가 이해할 수 있는 지식으로 전환합니다. 
+            시맨틱 웹 기술과 지식그래프로 데이터의 진정한 가치를 실현하세요.</p>
+            <div class="hero-buttons">
+                <a href="#contact" class="btn-glass btn-primary">무료 데모 신청</a>
+                <a href="#solutions" class="btn-glass btn-secondary">솔루션 보기</a>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Services Section -->
-        <section id="services" class="py-20 bg-gray-100">
-            <div class="container mx-auto px-6">
-                <h2 class="text-4xl font-bold text-center mb-4" data-aos="fade-up">주요 서비스</h2>
-                <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="100">
-                    데이터 수집부터 AI 기반 분석, 최적화까지, 비즈니스 성장을 위한 통합 솔루션을 만나보세요.
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Service 1 -->
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2" data-aos="fade-up" data-aos-delay="150">
-                        <div class="bg-teal-100 w-16 h-16 rounded-full flex items-center justify-center mb-6">
-                            <i class="fas fa-brain text-teal-600 text-2xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-semibold mb-3">AI & 디지털 전환 컨설팅</h3>
-                        <p class="text-gray-600">비즈니스 목표에 맞춰 AI 도입 전략을 수립하고, 디지털 전환 로드맵을 제시합니다. 데이터 기반의 의사결정 문화를 구축하고 프로세스를 혁신하여 경쟁 우위를 확보하도록 지원합니다.</p>
-                    </div>
-                    <!-- Service 2 -->
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2" data-aos="fade-up" data-aos-delay="200">
-                        <div class="bg-teal-100 w-16 h-16 rounded-full flex items-center justify-center mb-6">
-                            <i class="fas fa-database text-teal-600 text-2xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-semibold mb-3">데이터 플랫폼 구축</h3>
-                        <p class="text-gray-600">방대한 데이터를 효율적으로 수집, 저장, 처리, 분석할 수 있는 통합 데이터 플랫폼을 구축합니다. 실시간 데이터 처리와 고급 분석 기능을 통해 데이터의 잠재력을 완전히 끌어냅니다.</p>
-                    </div>
-                    <!-- Service 3 -->
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2" data-aos="fade-up" data-aos-delay="250">
-                        <div class="bg-teal-100 w-16 h-16 rounded-full flex items-center justify-center mb-6">
-                            <i class="fas fa-industry text-teal-600 text-2xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-semibold mb-3">스마트 팩토리 구축</h3>
-                        <p class="text-gray-600">IoT 센서와 AI 분석을 결합하여 생산성을 극대화하고 불량률을 최소화하는 지능형 공장을 구현합니다. 설비 예지보전, 공정 최적화, 품질 관리 등 제조 혁신을 위한 솔루션을 제공합니다.</p>
-                    </div>
-                    <!-- Service 4 -->
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2" data-aos="fade-up" data-aos-delay="300">
-                        <div class="bg-teal-100 w-16 h-16 rounded-full flex items-center justify-center mb-6">
-                            <i class="fas fa-project-diagram text-teal-600 text-2xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-semibold mb-3">AI 모델 개발</h3>
-                        <p class="text-gray-600">고객의 비즈니스 문제 해결을 위해 최적의 AI 모델을 설계하고 개발합니다. 이미지 인식, 자연어 처리, 추천 시스템 등 다양한 도메인의 맞춤형 AI 모델을 구현합니다.</p>
-                    </div>
-                    <!-- Service 5 -->
-                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2" data-aos="fade-up" data-aos-delay="350">
-                        <div class="bg-teal-100 w-16 h-16 rounded-full flex items-center justify-center mb-6">
-                            <i class="fas fa-chart-line text-teal-600 text-2xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-semibold mb-3">데이터 분석 및 시각화</h3>
-                        <p class="text-gray-600">복잡한 데이터를 의미 있는 인사이트로 변환합니다. 직관적인 대시보드와 리포트를 통해 데이터를 쉽게 이해하고 비즈니스 현황을 한눈에 파악할 수 있도록 돕습니다.</p>
-                    </div>
-                </div>
+    <section class="section">
+        <div class="section-header reveal">
+            <h2>왜 온톨로지인가?</h2>
+            <p>데이터의 양이 아닌, 데이터를 얼마나 잘 이해하고 연결하는지가 AI 시대의 핵심입니다</p>
+        </div>
+        <div class="grid-3">
+            <div class="card reveal">
+                <div class="icon-box">🧠</div>
+                <h3>AI 환각 현상 제거</h3>
+                <p>구조화된 온톨로지를 통해 LLM의 환각을 억제하고, 정확하고 신뢰할 수 있는 AI 응답을 보장합니다.</p>
             </div>
-        </section>
+            <div class="card reveal">
+                <div class="icon-box">🔗</div>
+                <h3>이기종 시스템 통합</h3>
+                <p>분산된 ERP, MES, C4I 시스템의 데이터를 의미 기반으로 통합하여 전사적 인사이트를 제공합니다.</p>
+            </div>
+            <div class="card reveal">
+                <div class="icon-box">⚡</div>
+                <h3>실시간 추론 엔진</h3>
+                <p>RDF/OWL 기반 추론으로 숨겨진 관계를 발견하고 자동화된 의사결정을 지원합니다.</p>
+            </div>
+            <div class="card reveal">
+                <div class="icon-box">🛡️</div>
+                <h3>국방급 보안</h3>
+                <p>국산 기술 기반으로 데이터 주권을 확보하고, 민감한 군사·산업 정보를 안전하게 보호합니다.</p>
+            </div>
+            <div class="card reveal">
+                <div class="icon-box">📊</div>
+                <h3>지식그래프 시각화</h3>
+                <p>복잡한 데이터 관계를 직관적인 그래프로 표현하여 빠른 패턴 인식과 분석을 가능하게 합니다.</p>
+            </div>
+            <div class="card reveal">
+                <div class="icon-box">🚀</div>
+                <h3>확장 가능한 아키텍처</h3>
+                <p>대용량 온톨로지 데이터 처리와 클라우드 기반 확장으로 기업 성장에 함께합니다.</p>
+            </div>
+        </div>
+    </section>
 
-        <!-- Solutions Section -->
-        <section id="solutions" class="py-20 bg-white">
-            <div class="container mx-auto px-6">
-                <h2 class="text-4xl font-bold text-center mb-4" data-aos="fade-up">주요 솔루션</h2>
-                <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="100">
-                    온톤의 검증된 솔루션으로 성공적인 디지털 전환을 경험하세요.
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Solution 1 -->
-                    <div class="border border-gray-200 rounded-xl p-8 hover:border-teal-500 transition-all" data-aos="zoom-in" data-aos-delay="150">
-                        <img src="https://via.placeholder.com/150x80.png?text=ONTONE+Datalab" alt="ONTONE Datalab" class="h-20 w-auto object-contain mb-6 mx-auto">
-                        <h3 class="text-2xl font-semibold mb-3 text-center">온톤 데이터랩</h3>
-                        <p class="text-gray-600 text-center">누구나 쉽게 사용할 수 있는 No-code/Auto-ML 데이터 분석 플랫폼. 데이터 전처리부터 모델 개발, 배포까지 AI 모델 생애주기를 통합 관리합니다.</p>
-                    </div>
-                    <!-- Solution 2 -->
-                    <div class="border border-gray-200 rounded-xl p-8 hover:border-teal-500 transition-all" data-aos="zoom-in" data-aos-delay="200">
-                        <img src="https://via.placeholder.com/150x80.png?text=ONTONE+Studio" alt="ONTONE Studio" class="h-20 w-auto object-contain mb-6 mx-auto">
-                        <h3 class="text-2xl font-semibold mb-3 text-center">온톤 스튜디오</h3>
-                        <p class="text-gray-600 text-center">제조 현장의 데이터를 실시간으로 수집하고 모니터링하는 통합 관제 솔루션. 설비 이상 감지, 공정 데이터 분석 등 스마트 팩토리의 핵심 기능을 제공합니다.</p>
-                    </div>
-                    <!-- Solution 3 -->
-                    <div class="border border-gray-200 rounded-xl p-8 hover:border-teal-500 transition-all" data-aos="zoom-in" data-aos-delay="250">
-                        <img src="https://via.placeholder.com/150x80.png?text=ONTONE+Edge" alt="ONTONE Edge" class="h-20 w-auto object-contain mb-6 mx-auto">
-                        <h3 class="text-2xl font-semibold mb-3 text-center">온톤 엣지</h3>
-                        <p class="text-gray-600 text-center">엣지(Edge) 환경에서 AI 모델을 경량화하여 실시간으로 실행하는 솔루션. 클라우드 의존도를 낮추고 빠른 응답 속도가 필요한 현장에 최적화되어 있습니다.</p>
-                    </div>
-                </div>
+    <section class="section" id="solutions">
+        <div class="section-header reveal">
+            <h2>산업별 특화 솔루션</h2>
+            <p>현장에서 검증된 온톨로지 데이터 통합 플랫폼</p>
+        </div>
+        <div class="grid-2">
+            <div class="card reveal">
+                <div class="icon-box" style="background: rgba(99, 102, 241, 0.2); border-color: var(--primary);">🎖️</div>
+                <h3>국방 데이터 통합 플랫폼</h3>
+                <p>전장 정보, 인사, 물자, 작전 데이터를 통합하여 전술적 우위를 확보합니다.</p>
+                <ul class="solution-list">
+                    <li>C4I 시스템 간 시맨틱 상호운용성 확보</li>
+                    <li>전술 데이터링크 표준 메시지 온톨로지 모델링</li>
+                    <li>국방통합데이터센터(DIDC) 연계 지원</li>
+                    <li>지휘통제체계 실시간 상황인식 강화</li>
+                    <li>보안 등급별 데이터 접근 제어</li>
+                </ul>
             </div>
-        </section>
+            <div class="card reveal">
+                <div class="icon-box" style="background: rgba(6, 182, 212, 0.2); border-color: var(--secondary);">🏭</div>
+                <h3>스마트팩토리 데이터 허브</h3>
+                <p>설비, 공정, 품질, 물류 데이터를 통합하여 지능형 제조 혁신을 실현합니다.</p>
+                <ul class="solution-list">
+                    <li>MES, ERP, PLM, SCADA 시스템 통합</li>
+                    <li>실시간 생산 공정 모니터링 및 최적화</li>
+                    <li>설비 예지 정비(PdM) AI 모델 구축</li>
+                    <li>품질 데이터 분석 및 불량 원인 자동 추적</li>
+                    <li>디지털 트윈 기반 시뮬레이션</li>
+                </ul>
+            </div>
+        </div>
+    </section>
 
-        <!-- Clients Section -->
-        <section id="clients" class="py-20 bg-gray-100">
-            <div class="container mx-auto px-6">
-                <h2 class="text-4xl font-bold text-center mb-12" data-aos="fade-up">함께하는 고객사</h2>
-                <div class="flex flex-wrap justify-center items-center gap-8 lg:gap-16">
-                    <!-- Partner Logos (using placeholder text) -->
-                    <div class="w-32 h-16 bg-gray-300 rounded flex items-center justify-center text-gray-600 font-bold hover:bg-teal-100 transition-colors" data-aos="fade-up">고객사 1</div>
-                    <div class="w-32 h-16 bg-gray-300 rounded flex items-center justify-center text-gray-600 font-bold hover:bg-teal-100 transition-colors" data-aos="fade-up" data-aos-delay="50">고객사 2</div>
-                    <div class="w-32 h-16 bg-gray-300 rounded flex items-center justify-center text-gray-600 font-bold hover:bg-teal-100 transition-colors" data-aos="fade-up" data-aos-delay="100">고객사 3</div>
-                    <div class="w-32 h-16 bg-gray-300 rounded flex items-center justify-center text-gray-600 font-bold hover:bg-teal-100 transition-colors" data-aos="fade-up" data-aos-delay="150">고객사 4</div>
-                    <div class="w-32 h-16 bg-gray-300 rounded flex items-center justify-center text-gray-600 font-bold hover:bg-teal-100 transition-colors" data-aos="fade-up" data-aos-delay="200">고객사 5</div>
-                    <div class="w-32 h-16 bg-gray-300 rounded flex items-center justify-center text-gray-600 font-bold hover:bg-teal-100 transition-colors" data-aos="fade-up" data-aos-delay="250">고객사 6</div>
-                </div>
+    <div class="stats-wrapper">
+        <div class="stats-grid">
+            <div class="stat-item reveal">
+                <div class="stat-num">15+</div>
+                <div class="stat-label">Projects</div>
             </div>
-        </section>
+            <div class="stat-item reveal">
+                <div class="stat-num">98%</div>
+                <div class="stat-label">Satisfaction</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-num">50M+</div>
+                <div class="stat-label">Data Records</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-num">24/7</div>
+                <div class="stat-label">Monitoring</div>
+            </div>
+        </div>
+    </div>
+
+    <section class="section" id="technology">
+        <div class="section-header reveal">
+            <h2>핵심 기술 스택</h2>
+            <p>세계 표준 시맨틱 웹 기술과 최신 AI 기술의 결합</p>
+        </div>
+        <div class="tech-wrapper reveal">
+            <div class="tech-tag">RDF/RDFS</div>
+            <div class="tech-tag">OWL 2.0</div>
+            <div class="tech-tag">SPARQL</div>
+            <div class="tech-tag">GraphDB</div>
+            <div class="tech-tag">Knowledge Graph</div>
+            <div class="tech-tag">Graph RAG</div>
+            <div class="tech-tag">Reasoning Engine</div>
+            <div class="tech-tag">Linked Open Data</div>
+        </div>
+    </section>
+
+    <section class="section" id="process">
+        <div class="section-header reveal">
+            <h2>구축 프로세스</h2>
+            <p>체계적인 방법론으로 안정적인 온톨로지 솔루션 구축</p>
+        </div>
+        <div class="process-container reveal">
+            <div class="process-item">
+                <div class="step-circle">1</div>
+                <h4>요구사항 분석</h4>
+                <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">비즈니스 목표 및 데이터 현황 파악</p>
+            </div>
+            <div class="process-item">
+                <div class="step-circle">2</div>
+                <h4>온톨로지 설계</h4>
+                <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">클래스, 속성, 관계 및 추론 규칙 정의</p>
+            </div>
+            <div class="process-item">
+                <div class="step-circle">3</div>
+                <h4>데이터 통합</h4>
+                <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">RDF 변환 및 지식그래프 구축</p>
+            </div>
+            <div class="process-item">
+                <div class="step-circle">4</div>
+                <h4>검증 및 배포</h4>
+                <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px;">추론 검증 및 실무 적용</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="contact">
+        <div class="section-header reveal">
+            <h2>데이터 통합, 지금 시작하세요</h2>
+            <p>전문가와의 무료 상담으로 귀사의 데이터 전환 여정을 시작하세요</p>
+        </div>
         
-        <!-- Resources Section -->
-        <section id="resources" class="py-20 bg-white">
-            <div class="container mx-auto px-6">
-                <h2 class="text-4xl font-bold text-center mb-4" data-aos="fade-up">리소스</h2>
-                <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="100">
-                    온톤의 최신 소식과 데이터, AI에 대한 유용한 정보를 만나보세요.
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Resource 1 -->
-                    <article class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow" data-aos="fade-up" data-aos-delay="150">
-                        <div class="p-6">
-                            <p class="text-sm text-teal-600 font-semibold mb-2">2023.10.26</p>
-                            <h3 class="text-xl font-semibold mb-2">스마트 팩토리, 어디서부터 시작해야 할까?</h3>
-                            <p class="text-gray-600">스마트 팩토리 도입을 고민하는 많은 기업들이 겪는 문제点和 해결 과정을 단계별로 상세히 설명합니다.</p>
-                        </div>
-                    </article>
-                    <!-- Resource 2 -->
-                    <article class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow" data-aos="fade-up" data-aos-delay="200">
-                        <div class="p-6">
-                            <p class="text-sm text-teal-600 font-semibold mb-2">2023.09.15</p>
-                            <h3 class="text-xl font-semibold mb-2">생산성 향상을 위한 AI 도입 사례</h3>
-                            <p class="text-gray-600">온톤의 솔루션을 통해 실제로 생산성을 30% 이상 향상시킨 H사의 성공 사례를 공개합니다.</p>
-                        </div>
-                    </article>
-                    <!-- Resource 3 -->
-                    <article class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow" data-aos="fade-up" data-aos-delay="250">
-                        <div class="p-6">
-                            <p class="text-sm text-teal-600 font-semibold mb-2">2023.08.30</p>
-                            <h3 class="text-xl font-semibold mb-2">데이터 품질 관리의 중요성</h3>
-                            <p class="text-gray-600">쓰레기가 들어가면 쓰레기가 나온다(GIGO). AI 프로젝트 성공의 핵심인 데이터 품질 관리 방법을 소개합니다.</p>
-                        </div>
-                    </article>
+        <div class="contact-wrapper reveal">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>회사명</label>
+                    <input type="text" class="form-control" placeholder="회사명 입력">
+                </div>
+                <div class="form-group">
+                    <label>담당자명</label>
+                    <input type="text" class="form-control" placeholder="성함 입력">
+                </div>
+                <div class="form-group">
+                    <label>이메일</label>
+                    <input type="email" class="form-control" placeholder="name@company.com">
+                </div>
+                <div class="form-group">
+                    <label>연락처</label>
+                    <input type="tel" class="form-control" placeholder="010-0000-0000">
                 </div>
             </div>
-        </section>
+            <div class="form-group">
+                <label>관심 솔루션</label>
+                <select class="form-control">
+                    <option value="" style="color: black">솔루션 선택</option>
+                    <option value="defense" style="color: black">국방 데이터 통합 플랫폼</option>
+                    <option value="manufacturing" style="color: black">스마트팩토리 데이터 허브</option>
+                    <option value="custom" style="color: black">맞춤형 솔루션 개발</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-top: 30px;">
+                <label>문의 내용</label>
+                <textarea class="form-control" placeholder="프로젝트 내용, 현재 데이터 환경 등을 자유롭게 적어주세요"></textarea>
+            </div>
+            <button class="submit-btn">무료 상담 신청하기</button>
+        </div>
+    </section>
 
-        <!-- About Section -->
-        <section id="about" class="py-20 bg-gray-100">
-            <div class="container mx-auto px-6">
-                <h2 class="text-4xl font-bold text-center mb-12" data-aos="fade-up">회사소개</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <div class="text-center" data-aos="zoom-in" data-aos-delay="100">
-                        <i class="fas fa-rocket text-5xl text-teal-600 mb-4"></i>
-                        <h4 class="text-xl font-semibold mb-2">빠른 기술 도입</h4>
-                        <p class="text-gray-600">최신 기술 트렌드를 빠르게 파악하고 고객에게 최적화된 솔루션을 신속하게 제공합니다.</p>
-                    </div>
-                    <div class="text-center" data-aos="zoom-in" data-aos-delay="150">
-                        <i class="fas fa-users text-5xl text-teal-600 mb-4"></i>
-                        <h4 class="text-xl font-semibold mb-2">전문가 집단</h4>
-                        <p class="text-gray-600">데이터, AI, 제업 분야의 전문가들이 협력하여 프로젝트 성공을 이끌어냅니다.</p>
-                    </div>
-                    <div class="text-center" data-aos="zoom-in" data-aos-delay="200">
-                        <i class="fas fa-cogs text-5xl text-teal-600 mb-4"></i>
-                        <h4 class="text-xl font-semibold mb-2">맞춤형 솔루션</h4>
-                        <p class="text-gray-600">고객의 비즈니스 환경과 필요에 맞춰 최적의 맞춤형 솔루션을 설계하고 구현합니다.</p>
-                    </div>
-                    <div class="text-center" data-aos="zoom-in" data-aos-delay="250">
-                        <i class="fas fa-handshake text-5xl text-teal-600 mb-4"></i>
-                        <h4 class="text-xl font-semibold mb-2">끊임없는 협력</h4>
-                        <p class="text-gray-600">프로젝트 이후에도 지속적인 기술 지원과 컨설팅을 통해 동반 성장을 도모합니다.</p>
-                    </div>
-                </div>
-                <div class="mt-16 text-center" data-aos="fade-up">
-                    <p class="text-lg text-gray-600 max-w-4xl mx-auto">
-                        <strong>(주)온톤</strong>은 데이터와 인공지능 기술을 통해 고객의 비즈니스 가치를 창출하는 것을 최우선 목표로 합니다. 우리는 단순한 기술 공급자를 넘어, 고객의 성공적인 디지털 전환을 함께 고민하고 해결책을 찾아가는 진정한 파트너가 되기 위해 노력합니다.
-                    </p>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Contact Section -->
-        <section id="contact" class="py-20 bg-gray-900 text-white">
-            <div class="container mx-auto px-6 text-center">
-                <h2 class="text-4xl font-bold mb-4" data-aos="fade-up">지금 바로 문의하세요</h2>
-                <p class="text-gray-300 mb-8 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
-                    디지털 전환과 데이터 기반 성장을 위한 첫 단계를 온톤과 함께 시작하세요. 전문가가 상담을 통해 최적의 솔루션을 찾아드립니다.
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="logo" style="margin-bottom: 20px;">ONT<span>ONE</span></div>
+                <p style="color: var(--text-muted); line-height: 1.8; font-size: 14px;">
+                    온톨로지 기반 데이터 통합 솔루션 전문 기업.<br>
+                    군과 제조업의 디지털 전환을 선도합니다.<br><br>
+                    서울시 강남구 테헤란로 123, 온투원빌딩 10층<br>
+                    contact@ontone.kr
                 </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center" data-aos="fade-up" data-aos-delay="200">
-                    <a href="mailto:contact@ontone.co.kr" class="bg-teal-600 text-white px-10 py-4 rounded-full text-lg font-semibold hover:bg-teal-700 transition-all transform hover:scale-105 shadow-lg">
-                        <i class="fas fa-envelope mr-2"></i> 이메일 문의
-                    </a>
-                    <a href="tel:+82212345678" class="border-2 border-teal-600 text-teal-600 px-10 py-4 rounded-full text-lg font-semibold hover:bg-teal-600 hover:text-white transition-all">
-                        <i class="fas fa-phone mr-2"></i> 전화 상담
-                    </a>
-                </div>
             </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-gray-400 py-12">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="text-white text-2xl font-bold mb-4">ONTONE</h3>
-                    <p>데이터와 AI로 비즈니스의 미래를 열다.</p>
-                </div>
-                <div>
-                    <h4 class="text-white font-semibold mb-4">서비스</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#services" class="hover:text-white transition-colors">AI & 디지털 전환</a></li>
-                        <li><a href="#services" class="hover:text-white transition-colors">데이터 플랫폼</a></li>
-                        <li><a href="#services" class="hover:text-white transition-colors">스마트 팩토리</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-semibold mb-4">회사</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#about" class="hover:text-white transition-colors">회사소개</a></li>
-                        <li><a href="#resources" class="hover:text-white transition-colors">리소스</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">채용</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-semibold mb-4">연락처</h4>
-                    <p><i class="fas fa-map-marker-alt mr-2"></i>서울특별시 영등포구 여의도동 13-25 정우빌딩 908</p>
-                    <p><i class="fas fa-phone mr-2"></i></p>
-                    <p><i class="fas fa-envelope mr-2"></i>devone@ontone.co.kr</p>
-                </div>
+            <div class="footer-col">
+                <h4>Solutions</h4>
+                <ul class="footer-links">
+                    <li><a href="#">국방 데이터 통합</a></li>
+                    <li><a href="#">스마트팩토리</a></li>
+                    <li><a href="#">기술 스택</a></li>
+                </ul>
             </div>
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
-                <p>&copy; 2025 ONTONE Inc. All Rights Reserved.</p>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="#">회사 소개</a></li>
+                    <li><a href="#">채용</a></li>
+                    <li><a href="#">블로그</a></li>
+                </ul>
             </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="#">문의하기</a></li>
+                    <li><a href="#">기술 문서</a></li>
+                    <li><a href="#">개인정보처리방침</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 ONTONE. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Initialize AOS
-        AOS.init({
-            duration: 1000,
-            once: true,
+        // Scroll Effect for Navbar
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
         });
 
-        // Smooth scrolling for anchor links
+        // Smooth Scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -362,21 +797,17 @@
                 }
             });
         });
-
-        // Mobile menu toggle
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const nav = document.querySelector('nav div.hidden.lg\\:flex');
         
-        mobileMenuButton.addEventListener('click', () => {
-            nav.classList.toggle('hidden');
-            nav.classList.toggle('absolute');
-            nav.classList.toggle('top-full');
-            nav.classList.toggle('left-0');
-            nav.classList.toggle('w-full');
-            nav.classList.toggle('bg-white');
-            nav.classList.toggle('flex-col');
-            nav.classList.toggle('p-6');
-            nav.classList.toggle('shadow-lg');
+        // Button Interaction
+        document.querySelector('.submit-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const btn = this;
+            btn.innerHTML = "접수되었습니다 ✓";
+            btn.style.background = "#10b981"; // Green
+            setTimeout(() => {
+                btn.innerHTML = "무료 상담 신청하기";
+                btn.style.background = "var(--gradient-main)";
+            }, 3000);
         });
     </script>
 </body>
